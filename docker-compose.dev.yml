@@ -1,0 +1,11 @@
+# only development related compose file
+services:
+  ecommerce:
+    build:
+      context: . # the workdir (parent of Dockerfile)
+      target: development
+    volumes: # binding mount
+      - ./src:/app/src:ro # ro: read only (mount binding)
+    environment:
+      - NODE_ENV=development
+    command: npm run dev # override the CMD command in the Docker file

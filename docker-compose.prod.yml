@@ -1,0 +1,10 @@
+version: '3'
+services:
+  ecommerce:
+    build:
+      context: . # the folder where Dockerfile is
+      target: production # production stage in the docker file
+    restart: always
+    environment:
+      - NODE_ENV=production
+    command: npm start # override the CMD command in the Docker file
