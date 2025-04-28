@@ -6,7 +6,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const app = require('../../src/app');
 const {
-  CreateCategory,
+  createCategory,
   createProduct,
   createAdminUser,
   createReqularUser,
@@ -33,7 +33,7 @@ beforeAll(async () => {
   userToken = createJWTToken(regularUser._id); // Generate token after user is created
 
   // create category
-  const category = await CreateCategory();
+  const category = await createCategory();
   categoryId = category._id;
 });
 
@@ -298,7 +298,6 @@ describe('Testing Products routes ', () => {
               category: categoryId,
               quantity: 10,
             });
-          console.log(response.body);
           expect(response.status).toBe(200);
           expect(response.body.data.doc).toHaveProperty(
             'name',
@@ -344,7 +343,9 @@ describe('Testing Products routes ', () => {
               quantity: 10,
             });
           expect(response.status).toBe(404);
-          expect(response.body.message).toBe('No document found with this ID');
+          expect(response.body.message).toBe(
+            'No document with this ID 646f3b0c4d5e8a3d4c8b4567',
+          );
         });
       });
 
@@ -451,7 +452,9 @@ describe('Testing Products routes ', () => {
             .delete('/api/v1/products/646f3b0c4d5e8a3d4c8b4567')
             .set('Authorization', `Bearer ${adminToken}`);
           expect(response.status).toBe(404);
-          expect(response.body.message).toBe('No document found with this ID');
+          expect(response.body.message).toBe(
+            'No document with this ID 646f3b0c4d5e8a3d4c8b4567',
+          );
         });
       });
 
@@ -531,10 +534,12 @@ describe('Testing Products routes ', () => {
     describe('with non-existing id', () => {
       test('should return 404 Not Found', async () => {
         const response = await supertest(app).get(
-          '/api/v1/products/66cc5aa7be03da97c6b0757d/reviews',
+          '/api/v1/products/646f3b0c4d5e8a3d4c8b4567/reviews',
         );
         expect(response.status).toBe(400);
-        expect(response.body.message).toMatch('No product found with this Id');
+        expect(response.body.message).toMatch(
+          'No product with this id 646f3b0c4d5e8a3d4c8b4567',
+        );
       });
     });
   });
