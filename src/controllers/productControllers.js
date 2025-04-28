@@ -26,7 +26,6 @@ exports.resizeProductImages = catchAsync(async (req, res, next) => {
 
   // Resize and save the cover image if available
   if (req.files.imageCover) {
-    console.log('Cover image exists:', req.files.imageCover[0].buffer);
     const imageCoverFilename = `product-${uuidv4()}-${Date.now()}-cover.jpeg`;
     await sharp(req.files.imageCover[0].buffer)
       .resize(2000, 1333)
