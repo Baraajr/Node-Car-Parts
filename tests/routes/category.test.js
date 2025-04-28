@@ -6,7 +6,6 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const app = require('../../src/app');
 const {
-  CreateCategory,
   createAdminUser,
   createReqularUser,
   createJWTToken,
@@ -16,7 +15,6 @@ const {
 } = require('../helpers/helper');
 
 let adminToken;
-let categoryId;
 let userToken;
 let mongoServer;
 // let productId;

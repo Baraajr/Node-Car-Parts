@@ -57,6 +57,20 @@ describe('Testing Products routes ', () => {
       });
     });
 
+    describe('GET with pagination', () => {
+      test('should return paginated products', async () => {
+        const response = await supertest(app).get(
+          '/api/v1/products?page=1&limit=5',
+        );
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('success');
+        expect(response.body).toHaveProperty('paginationResult');
+        expect(response.body.paginationResult).toHaveProperty('currentPage', 1);
+        expect(response.body.paginationResult).toHaveProperty('limit', 5);
+        expect(response.body.paginationResult).toHaveProperty('numberOfPages');
+      });
+    });
+
     describe('POST', () => {
       describe('without a login token', () => {
         test('should return 401 Unauthorized', async () => {
@@ -243,6 +257,188 @@ describe('Testing Products routes ', () => {
             expect(response.status).toBe(400);
             expect(response.body.message).toContain(
               'No category for this id: 646f3b0c4d5e8a3d4c8b4567',
+            );
+          });
+        });
+
+        describe('with invalid price', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 'invalidPrice',
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'Product price must be a number',
+            );
+          });
+        });
+
+        describe('with negative price', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: -200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'Product price must be greater than or equal to 0',
+            );
+          });
+        });
+
+        describe('with invalid quantity', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 'invalidQuantity',
+                imageCover: 'Test Image Cover',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'quantity must be a number',
+            );
+          });
+        });
+
+        describe('with negative quantity', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: -5,
+                imageCover: 'Test Image Cover',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'Product quantity must be greater than or equal to 0',
+            );
+          });
+        });
+
+        describe('with non-integer quantity', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5.5,
+                imageCover: 'Test Image Cover',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'Product quantity must be an integer',
+            );
+          });
+        });
+
+        describe('non-existing brand', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+                brand: '646f3b0c4d5e8a3d4c8b4567',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain(
+              'No brand with this id 646f3b0c4d5e8a3d4c8b4567',
+            );
+          });
+        });
+
+        describe('with invalid brand', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+                brand: 'invalidBrandId',
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain('Invalid brand ID format');
+          });
+        });
+
+        describe('with non-existing subcategory', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+                subcategories: ['646f3b0c4d5e8a3d4c8b4567'],
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toMatch(
+              'One or more subcategory IDs do not exist',
+            );
+          });
+        });
+
+        describe('with invalid subcategory', () => {
+          test('should return 400 Bad Request', async () => {
+            const response = await supertest(app)
+              .post('/api/v1/products')
+              .set('Authorization', `Bearer ${adminToken}`)
+              .send({
+                name: 'Test Product 2',
+                price: 200,
+                description: 'Test product description 2',
+                category: categoryId,
+                quantity: 5,
+                imageCover: 'Test Image Cover',
+                subcategories: ['invalidSubcategoryId'],
+              });
+            expect(response.status).toBe(400);
+            expect(response.body.message).toMatch(
+              'One or more subcategory IDs are invalid.',
             );
           });
         });
@@ -489,7 +685,7 @@ describe('Testing Products routes ', () => {
   describe('get /api/v1/products/search', () => {
     describe('with valid search text', () => {
       test('should return an array of products', async () => {
-        const newProduct = await createProduct(categoryId);
+        await createProduct(categoryId);
         const response = await supertest(app)
           .get('/api/v1/products/search')
           .send({ text: 'Test' });
@@ -543,6 +739,7 @@ describe('Testing Products routes ', () => {
       });
     });
   });
+
   describe('post /api/v1/products/:id/reviews', () => {
     describe('Post', () => {
       describe('with user token', () => {
