@@ -1,5 +1,5 @@
 .vscode/
 node_modules/
-config.env
+.env
 .vercel
 vercel.json
