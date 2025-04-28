@@ -5,10 +5,14 @@ const catchAsync = require('../utils/catchAsync');
 
 exports.getAll = (model, populateOptions, modelName = '') =>
   catchAsync(async (req, res) => {
-    let filter = {};
-
     // case: nested route api/v1/categories/categoryId/subcategories
+    let filter = {};
     if (req.filterObj) filter = req.filterObj;
+
+    // cache key for redis
+    const cacheKey = JSON.stringify({
+      ...req.query,
+    });
 
     const documentsCounts = await model.countDocuments();
     const features = new ApiFeatures(model.find(filter), req.query)
@@ -90,7 +94,9 @@ exports.deleteOne = (model) =>
     const deletedDoc = await model.findOneAndDelete({ _id: req.params.id });
 
     if (!deletedDoc)
-      return next(new AppError('No document found with this ID', 404));
+      return next(
+        new AppError(`No document with this ID ${req.params.id}`, 404),
+      );
 
     res.status(204).json({
       status: 'deleted',
@@ -110,7 +116,9 @@ exports.updateOne = (model) =>
     });
 
     if (!updatedDoc) {
-      return next(new AppError('No document found with this ID', 404));
+      return next(
+        new AppError(`No document with this ID ${req.params.id}`, 404),
+      );
     }
     // to be able to use the post save middleware
     updatedDoc.save();
