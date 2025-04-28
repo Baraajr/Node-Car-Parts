@@ -28,15 +28,6 @@ exports.getAll = (model, populateOptions, modelName = '') =>
       });
     const documents = await mongooseQuery;
 
-    console.log({
-      status: 'success',
-      results: documents.length,
-      paginationResult,
-      data: {
-        documents,
-      },
-    });
-
     res.status(200).json({
       status: 'success',
       results: documents.length,
