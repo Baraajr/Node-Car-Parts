@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
     quantity: {
       type: Number,
       required: [true, 'quantity is required'],
+      min: [0, 'quantity must be greater than or equal to 0'],
     },
     sold: {
       type: Number,
