@@ -23,7 +23,7 @@ exports.createReviewValidator = [
       // Check if product exists
       const product = await Product.findById(productId);
       if (!product) {
-        throw new AppError('No product found with this Id', 404);
+        throw new AppError(`No product with this id ${val}`, 404);
       }
 
       // Check if the logged-in user has already created a review for this product

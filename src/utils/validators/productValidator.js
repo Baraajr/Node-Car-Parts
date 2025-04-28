@@ -175,7 +175,7 @@ exports.validateProductId = [
       // Check if the product exists in the database
       const product = await Product.findById(val);
       if (!product) {
-        throw new AppError('No product found with this Id', 404);
+        throw new AppError(`No product with this id ${val}`, 404);
       }
     }),
   validatorMiddleware,
