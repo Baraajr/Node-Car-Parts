@@ -5,6 +5,7 @@ const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 const Category = require('../../models/categoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Product = require('../../models/productModel');
+const Brand = require('../../models/brandModel');
 const AppError = require('../appError');
 
 exports.createProductValidator = [
@@ -29,7 +30,19 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage('Product quantity is required')
     .isNumeric()
-    .withMessage('Product quantity must be a number'),
+    .withMessage('Product quantity must be a number')
+    .custom((val) => {
+      if (val < 0) {
+        throw new AppError(
+          'Product quantity must be greater than or equal to 0',
+          400,
+        );
+      }
+      if (val % 1 !== 0) {
+        throw new AppError('Product quantity must be an integer', 400);
+      }
+      return true;
+    }),
   check('sold')
     .optional()
     .isNumeric()
@@ -40,7 +53,16 @@ exports.createProductValidator = [
     .isNumeric()
     .withMessage('Product price must be a number')
     .isLength({ max: 32 })
-    .withMessage('To long price'),
+    .withMessage('To long price')
+    .custom((val) => {
+      if (val < 0) {
+        throw new AppError(
+          'Product price must be greater than or equal to 0',
+          400,
+        );
+      }
+      return true;
+    }),
   check('priceAfterDiscount')
     .optional()
     .isNumeric()
@@ -117,8 +139,16 @@ exports.createProductValidator = [
         },
       ),
     ),
-
-  check('brand').optional().isMongoId().withMessage('Invalid brand ID format'),
+  check('brand')
+    .optional()
+    .isMongoId()
+    .withMessage('Invalid brand ID format')
+    .custom(async (brandId) => {
+      const brand = await Brand.findById(brandId);
+      if (!brand) {
+        throw new AppError(`No brand with this id ${brandId}`, 400);
+      }
+    }),
   check('ratingsAverage')
     .optional()
     .isNumeric()
@@ -131,7 +161,6 @@ exports.createProductValidator = [
     .optional()
     .isNumeric()
     .withMessage('ratingsQuantity must be a number'),
-
   validatorMiddleware,
 ];
 
