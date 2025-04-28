@@ -34,7 +34,7 @@ exports.createJWTToken = (id) => {
   return token;
 };
 
-exports.CreateCategory = async () => {
+exports.createCategory = async () => {
   const category = await Category.create({
     name: 'Test Category',
   });
