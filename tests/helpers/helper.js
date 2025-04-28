@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 const Product = require('../../src/models/productModel');
 const User = require('../../src/models/userModel');
 const Category = require('../../src/models/categoryModel');
+const Brand = require('../../src/models/brandModel');
+const SubCategory = require('../../src/models/subCategoryModel');
 
 dotenv.config();
 
@@ -41,6 +43,21 @@ exports.createCategory = async () => {
   return category;
 };
 
+exports.createSubCategory = async (categoryId) => {
+  const subCategory = await SubCategory.create({
+    name: 'test subCategory',
+    category: categoryId,
+  });
+  return subCategory;
+};
+
+exports.createBrand = async () => {
+  const brand = await Brand.create({
+    name: 'test brand',
+  });
+  return brand;
+};
+
 // eslint-disable-next-line no-shadow
 exports.createProduct = async (categoryId) => {
   const product = await Product.create({
@@ -62,4 +79,16 @@ exports.deleteAllProducts = async () => {
 
 exports.deleteAllCategories = async () => {
   await Category.deleteMany({});
+};
+
+exports.deleteAllBrands = async () => {
+  await Brand.deleteMany({});
+};
+
+exports.deleteAllSubCategories = async () => {
+  await SubCategory.deleteMany({});
+};
+
+exports.deleteAllUsers = async () => {
+  await User.deleteMany({});
 };
