@@ -2,6 +2,7 @@ const slugify = require('slugify');
 const ApiFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+require('../utils/cache');
 
 exports.getAll = (model, populateOptions, modelName = '') =>
   catchAsync(async (req, res) => {
@@ -30,7 +31,7 @@ exports.getAll = (model, populateOptions, modelName = '') =>
         path: populateOptions,
         select: 'name',
       });
-    const documents = await mongooseQuery;
+    const documents = await mongooseQuery.cache('public');
 
     res.status(200).json({
       status: 'success',
@@ -110,18 +111,16 @@ exports.updateOne = (model) =>
     if (req.body.name) req.body.slug = slugify(req.body.name);
     if (req.body.title) req.body.slug = slugify(req.body.title);
 
-    const updatedDoc = await model.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedDoc) {
+    const oldDoc = await model.findById(req.params.id);
+    if (!oldDoc) {
       return next(
         new AppError(`No document with this ID ${req.params.id}`, 404),
       );
     }
+
+    oldDoc.set(req.body);
     // to be able to use the post save middleware
-    updatedDoc.save();
+    const updatedDoc = await oldDoc.save();
 
     res.status(200).json({
       status: 'success',

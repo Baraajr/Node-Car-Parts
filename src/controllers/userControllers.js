@@ -39,46 +39,46 @@ exports.getAllUsers = factory.getAll(User);
 exports.createUser = factory.createOne(User);
 exports.getUser = factory.getOne(User);
 
-exports.updateUser = catchAsync(async (req, res, next) => {
-  // prevent this route from updating password
-  if (req.body.password)
-    return next(new AppError('this route is not for updating password', 400));
+// exports.updateUser = catchAsync(async (req, res, next) => {
+//   // prevent this route from updating password
+//   if (req.body.password)
+//     return next(new AppError('this route is not for updating password', 400));
 
-  if (req.body.name) req.body.slug = slugify(req.body.name);
+//   if (req.body.name) req.body.slug = slugify(req.body.name);
 
-  // prevent changing the user role
-  delete req.body.role;
+//   // prevent changing the user role
+//   delete req.body.role;
 
-  const updatedDoc = await User.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+//   const updatedDoc = await User.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true,
+//     runValidators: true,
+//   });
 
-  if (!updatedDoc) {
-    return next(new AppError('No document found with this ID', 404));
-  }
+//   if (!updatedDoc) {
+//     return next(new AppError('No document found with this ID', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    updatedDoc,
-  });
-});
-exports.deleteUser = factory.deleteOne(User);
+//   res.status(200).json({
+//     status: 'success',
+//     updatedDoc,
+//   });
+// });
+// exports.deleteUser = factory.deleteOne(User);
 
-exports.updateUserPassword = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+// exports.updateUserPassword = catchAsync(async (req, res, next) => {
+//   const user = await User.findById(req.params.id);
 
-  if (!user) return next(new AppError('user not found', 400));
+//   if (!user) return next(new AppError('user not found', 400));
 
-  // we used the save method to hash the password using the pre save middleware /
-  user.password = req.body.password;
-  await user.save();
+//   // we used the save method to hash the password using the pre save middleware /
+//   user.password = req.body.password;
+//   await user.save();
 
-  res.status(200).json({
-    status: 'password updated successfully',
-    user,
-  });
-});
+//   res.status(200).json({
+//     status: 'password updated successfully',
+//     user,
+//   });
+// });
 
 // only admin can use this
 exports.updateUserRole = catchAsync(async (req, res, next) => {
@@ -199,6 +199,8 @@ exports.updateLoggedUserPassword = catchAsync(async (req, res, next) => {
 
 // change the active field to false
 exports.deleteLoggedUserData = catchAsync(async (req, res, next) => {
+  if (req.user.role === 'admin')
+    return next(new AppError('Admin cannot delete their account', 400));
   await User.findByIdAndUpdate(req.user._id, { active: false });
 
   res.status(204).json({ status: 'Success' });

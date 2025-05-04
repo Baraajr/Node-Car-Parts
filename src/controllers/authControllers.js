@@ -186,7 +186,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    message: 'Email sent successfully',
+    message: 'Reset code sent to your email!',
   });
 });
 
@@ -194,6 +194,10 @@ exports.verifyPasswordResetCode = catchAsync(async (req, res, next) => {
   // Check if the reset code is provided
   if (!req.body.resetCode) {
     return next(new AppError('Please enter the reset code', 400));
+  }
+
+  if (!req.body.email) {
+    return next(new AppError('Please enter your email', 400));
   }
 
   //1) Hash the provided reset code
@@ -204,6 +208,7 @@ exports.verifyPasswordResetCode = catchAsync(async (req, res, next) => {
 
   //2) Find the user with the hashed reset code and check expiration
   const user = await User.findOne({
+    email: req.body.email,
     passwordResetCode: hashedResetCode,
     passwordResetExpires: { $gt: Date.now() },
   });
