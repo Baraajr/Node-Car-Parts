@@ -280,3 +280,25 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     token,
   });
 });
+
+exports.passportHandler = catchAsync(async (req, res) => {
+  // Issue a JWT for the authenticated user
+  const { user } = req;
+  const id = user._id.toString();
+  const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+  // Store the JWT in an HTTP-only cookie
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+    secure: req.secure === true || req.headers['x-forwarded-proto'] === 'https',
+  };
+
+  res.cookie('JWT', token, cookieOptions);
+
+  // Redirect or send a response
+  res.redirect('/');
+});
