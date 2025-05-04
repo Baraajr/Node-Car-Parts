@@ -7,7 +7,7 @@ const AppError = require('../appError');
 exports.signupValidator = [
   check('name')
     .notEmpty()
-    .withMessage('Name required')
+    .withMessage('Name is required')
     .isLength({ min: 3 })
     .withMessage('Too short User name')
     .custom((val, { req }) => {
@@ -23,16 +23,16 @@ exports.signupValidator = [
     .custom((val) =>
       User.findOne({ email: val }).then((user) => {
         if (user) {
-          return Promise.reject(new AppError('E-mail already in user'));
+          return Promise.reject(new AppError('E-mail already in use'));
         }
       }),
     ),
 
   check('password')
     .notEmpty()
-    .withMessage('Password required')
+    .withMessage('Password is required')
     .isLength({ min: 8 })
-    .withMessage('Password must be at least 6 characters')
+    .withMessage('Password must be at least 8 characters')
     .custom((password, { req }) => {
       if (password !== req.body.passwordConfirm) {
         throw new AppError("Passwords don't match");
@@ -42,7 +42,7 @@ exports.signupValidator = [
 
   check('passwordConfirm')
     .notEmpty()
-    .withMessage('Password confirmation required'),
+    .withMessage('Password confirmation is required'),
 
   check('phone')
     .optional()
