@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 // eslint-disable-next-line import/no-extraneous-dependencies
-const dotenv = require('dotenv');
 const connectDb = require('./config/db');
 
 // Handle uncaught exceptions
@@ -8,9 +7,6 @@ process.on('uncaughtException', (err) => {
   console.log('Uncaught Exception: Shutting down...');
   console.log(err.stack || err.message);
 });
-
-// env variables
-dotenv.config();
 
 // Connect to the database
 connectDb();

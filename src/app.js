@@ -1,5 +1,6 @@
 const path = require('path');
 const express = require('express');
+require('dotenv').config(); // Load environment variables from .env file
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -77,6 +78,10 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // Define routes
 mountRoutes(app);
+
+app.get('/', (req, res) => {
+  res.send(`Welcome to the car parts API!`);
+});
 
 // Handle unhandled routes
 app.all('*', (req, res, next) => {
