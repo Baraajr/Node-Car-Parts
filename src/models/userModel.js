@@ -2,6 +2,7 @@ const crypto = require('crypto');
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,9 +25,15 @@ const userSchema = new mongoose.Schema(
     profileImg: { type: String },
     password: {
       type: String,
-      required: [true, 'password required'],
-      minlength: [6, 'Too short password'],
-      select: false,
+      minlength: [8, 'Password must be at least 8 characters long'],
+      select: false, // not exposed in output
+      validate: {
+        validator: function (value) {
+          // Only validate password for 'local' authProvider
+          return this.authProvider === 'local' ? !!value : true;
+        },
+        message: 'A password is required for local authentication',
+      },
     },
     passwordChangedAt: Date,
     passwordResetCode: String,
