@@ -19,7 +19,16 @@ exports.createAdminUser = async () => {
   return admin;
 };
 
-exports.createReqularUser = async () => {
+exports.createReqularUser = async (options) => {
+  if (options) {
+    const user = await User.create({
+      name: options.name,
+      email: options.email,
+      password: options.password,
+      passwordConfirm: options.passwordConfirm,
+    });
+    return user;
+  }
   const user = await User.create({
     name: 'Test User',
     email: 'test@example.com',
