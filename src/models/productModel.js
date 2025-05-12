@@ -5,14 +5,13 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'A product must have a name'],
-      minLength: [3, 'Too shortProduct name '],
+      minLength: [3, 'Too short Product name'],
       trim: true,
-      unique: [true, 'Product name must be unique'],
+      // unique: [true, 'Product name must be unique'],
       maxLength: [32, 'Too long product name'],
     },
     slug: {
       type: String,
-      require: true,
       lowercase: true,
     },
     description: {
@@ -110,7 +109,7 @@ productSchema.virtual('reviews', {
   localField: '_id',
 });
 
-productSchema.index({ title: 1, description: 1 });
+productSchema.index({ name: 1 }, { unique: true });
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;
