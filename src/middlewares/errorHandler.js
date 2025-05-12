@@ -8,8 +8,11 @@ const handleCastErrorDB = (err) => {
 
 //handle duplicate fields
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  const message = `Duplicate field ${value}. please use another value`;
+  const keyValue = err.keyValue || err.cause?.keyValue;
+  const field = keyValue ? Object.keys(keyValue)[0] : 'unknown field';
+  const value = keyValue ? keyValue[field] : 'duplicate value';
+
+  const message = `Duplicate field ${field}: '${value}'. Please use another value.`;
   return new AppError(message, 400);
 };
 
@@ -53,9 +56,8 @@ const sendErrorProd = (err, res) => {
     }
 
     // 2) Send generic message
-    return res.status(err.statusCode).render('error', {
-      title: 'Something went wrong!',
-      msg: 'Please try again later.',
+    return res.status(err.statusCode).json({
+      message: 'Something went wrong!Please try again later.',
     });
   }
 };
@@ -74,7 +76,8 @@ module.exports = (err, req, res, next) => {
     process.env.NODE_ENV === 'test'
   ) {
     if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.code === 11000 || error.cause?.code === 11000)
+      error = handleDuplicateFieldsDB(error);
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
