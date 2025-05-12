@@ -1,6 +1,6 @@
 version: '3'
 services:
-  ecommerce:
+  car-parts:
     build:
       context: . # the folder where Dockerfile is
       target: production # production stage in the docker file

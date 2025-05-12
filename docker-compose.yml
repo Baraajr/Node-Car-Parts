@@ -1,9 +1,13 @@
 # base docker-compose file
 services:
   car-parts:
-    image: ecommerce # specify the name of the image
+    image: car-parts # specify the name of the image
     env_file:
       - ./.env
+    environment:
+      - DATABASE_LOCAL=mongodb://host.docker.internal:27017/car-parts
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - redis
     restart: always
@@ -14,15 +18,12 @@ services:
     restart: always
     ports:
       - 6379:6379
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
 
   nginx:
     container_name: nginx
     image: nginx:stable-alpine
     ports:
-      - '8080:80'
+      - '80:80'
     depends_on:
       - car-parts
     volumes:
