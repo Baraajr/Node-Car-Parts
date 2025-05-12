@@ -2,9 +2,8 @@
 /* eslint-disable no-undef */
 /* eslint-disable import/no-extraneous-dependencies */
 const supertest = require('supertest');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose');
 const app = require('../../src/app');
+
 const {
   createAdminUser,
   createReqularUser,
@@ -18,14 +17,8 @@ const {
 let categoryId;
 let adminToken;
 let userToken;
-let mongoServer;
-// let productId;
 
 beforeAll(async () => {
-  // Start MongoDB in-memory server
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri(), {});
-
   // create admin and regular user
   const adminUser = await createAdminUser(); // Await user creation
   adminToken = createJWTToken(adminUser._id); // Generate token after user is created
@@ -41,25 +34,19 @@ afterEach(async () => {
   await deleteAllSubCategories();
 });
 
-afterAll(async () => {
-  await mongoose.connection.db.dropDatabase(); // Clean up the database
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
 describe('Testing subCategory routes ', () => {
   describe('/api/v1/subCategories', () => {
     describe('GET', () => {
-      test('should return an array of products', async () => {
+      it('should return an array of subCategories', async () => {
         const response = await supertest(app).get('/api/v1/subCategories');
         expect(response.status).toBe(200);
-        expect(Array.isArray(response.body.data.documents)).toBeTruthy();
+        expect(Array.isArray(response.body.data.subcategories)).toBeTruthy();
       });
     });
 
     describe('POST', () => {
       describe('without a login token', () => {
-        test('should return 401 Unauthorized', async () => {
+        it('should return 401 Unauthorized', async () => {
           const response = await supertest(app)
             .post('/api/v1/subCategories')
             .send({
@@ -73,7 +60,7 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with regular user token', () => {
-        test('Should returns 403 Forbidden', async () => {
+        it('Should returns 403 Forbidden', async () => {
           const response = await supertest(app)
             .post('/api/v1/subCategories')
             .set('Authorization', `Bearer ${userToken}`)
@@ -90,7 +77,7 @@ describe('Testing subCategory routes ', () => {
 
       describe('with Admin token', () => {
         describe('with all required fields', () => {
-          test('should Return 201 Created', async () => {
+          it('should Return 201 Created', async () => {
             const response = await supertest(app)
               .post('/api/v1/subCategories')
               .set('Authorization', `Bearer ${adminToken}`)
@@ -100,7 +87,7 @@ describe('Testing subCategory routes ', () => {
               });
 
             expect(response.status).toBe(201);
-            expect(response.body.data.doc).toHaveProperty(
+            expect(response.body.data.subcategory).toHaveProperty(
               'name',
               'test subcategory',
             );
@@ -108,18 +95,22 @@ describe('Testing subCategory routes ', () => {
         });
 
         describe('with missing name', () => {
-          test('should return 400 Bad Request', async () => {
+          it('should return 400 Bad Request', async () => {
             const response = await supertest(app)
               .post('/api/v1/subCategories')
               .set('Authorization', `Bearer ${adminToken}`)
-              .send({});
+              .send({
+                category: categoryId,
+              });
             expect(response.status).toBe(400);
-            expect(response.body.message).toContain('category name required');
+            expect(response.body.message).toContain(
+              'subCategory name required',
+            );
           });
         });
 
         describe('with short name', () => {
-          test('should return 400 Bad Request', async () => {
+          it('should return 400 Bad Request', async () => {
             const response = await supertest(app)
               .post('/api/v1/subCategories')
               .set('Authorization', `Bearer ${adminToken}`)
@@ -129,7 +120,7 @@ describe('Testing subCategory routes ', () => {
               });
             expect(response.status).toBe(400);
             expect(response.body.message).toContain(
-              'Too short SubCategory name',
+              'Too short subCategory name',
             );
           });
         });
@@ -137,32 +128,32 @@ describe('Testing subCategory routes ', () => {
     });
   });
 
-  describe('/api/v1/products/:id', () => {
+  describe('/api/v1/subCategories/:id', () => {
     describe('GET', () => {
       describe('with valid id', () => {
-        test('should return a single category', async () => {
+        it('should return a single subCategory', async () => {
           const newSubCategory = await createSubCategory(categoryId);
           const response = await supertest(app).get(
             `/api/v1/subCategories/${newSubCategory._id}`,
           );
           expect(response.status).toBe(200);
-          expect(response.body.data.doc).toHaveProperty(
+          expect(response.body.data.subcategory).toHaveProperty(
             'name',
             'test subCategory',
           );
         });
       });
       describe('with invalid id', () => {
-        test('should return 400 Bad Request', async () => {
+        it('should return 400 Bad Request', async () => {
           const response = await supertest(app).get(
             '/api/v1/subCategories/invalidId',
           );
           expect(response.status).toBe(400);
-          expect(response.body.message).toMatch('Invalid Subcategory id');
+          expect(response.body.message).toMatch('Invalid subCategory id');
         });
       });
       describe('with non-existing id', () => {
-        test('should return 404 Not Found', async () => {
+        it('should return 404 Not Found', async () => {
           const response = await supertest(app).get(
             '/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567',
           );
@@ -176,42 +167,42 @@ describe('Testing subCategory routes ', () => {
 
     describe('PATCH', () => {
       describe('with valid id', () => {
-        test('should update the category', async () => {
+        it('should update the subCategory', async () => {
           const newSubCategory = await createSubCategory(categoryId);
           const response = await supertest(app)
             .patch(`/api/v1/subCategories/${newSubCategory._id}`)
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
-              name: 'Updated Category',
+              name: 'Updated subCategory',
             });
           expect(response.status).toBe(200);
-          expect(response.body.data.doc).toHaveProperty(
+          expect(response.body.data.subcategory).toHaveProperty(
             'name',
-            'Updated Category',
+            'Updated subCategory',
           );
         });
       });
 
       describe('with invalid id', () => {
-        test('should return 400 Bad Request', async () => {
+        it('should return 400 Bad Request', async () => {
           const response = await supertest(app)
             .patch('/api/v1/subCategories/invalidId')
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
-              name: 'Updated Product',
+              name: 'Updated subCategory',
             });
           expect(response.status).toBe(400);
-          expect(response.body.message).toMatch('Invalid SubCategory id');
+          expect(response.body.message).toMatch('Invalid subCategory id');
         });
       });
 
       describe('with non-existing id', () => {
-        test('should return 404 Not Found', async () => {
+        it('should return 404 Not Found', async () => {
           const response = await supertest(app)
             .patch('/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567')
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
-              name: 'Updated Product',
+              name: 'Updated subCategory',
             });
           expect(response.status).toBe(404);
           expect(response.body.message).toBe(
@@ -221,13 +212,12 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with regular user token', () => {
-        test('should return 403 Forbidden', async () => {
-          const newSubCategory = await createSubCategory(categoryId);
+        it('should return 403 Forbidden', async () => {
           const response = await supertest(app)
-            .patch(`/api/v1/subCategories/${newSubCategory._id}`)
+            .patch(`/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567`)
             .set('Authorization', `Bearer ${userToken}`)
             .send({
-              name: 'Updated Product',
+              name: 'Updated subSategory',
             });
           expect(response.status).toBe(403);
           expect(response.body.message).toBe(
@@ -237,12 +227,11 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with missing token', () => {
-        test('should return 401 Unauthorized', async () => {
-          const newSubCategory = await createSubCategory(categoryId);
+        it('should return 401 Unauthorized', async () => {
           const response = await supertest(app)
-            .patch(`/api/v1/subCategories/${newSubCategory._id}`)
+            .patch(`/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567`)
             .send({
-              name: 'Updated Product',
+              name: 'Updated subCategory',
             });
           expect(response.status).toBe(401);
           expect(response.body.message).toBe(
@@ -254,7 +243,7 @@ describe('Testing subCategory routes ', () => {
 
     describe('DELETE', () => {
       describe('with valid id', () => {
-        test('should delete the product', async () => {
+        it('should delete the subCategory', async () => {
           const newSubCategory = await createSubCategory(categoryId);
           const response = await supertest(app)
             .delete(`/api/v1/subCategories/${newSubCategory._id}`)
@@ -264,17 +253,17 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with invalid id', () => {
-        test('should return 400 Bad Request', async () => {
+        it('should return 400 Bad Request', async () => {
           const response = await supertest(app)
             .delete('/api/v1/subCategories/invalidId')
             .set('Authorization', `Bearer ${adminToken}`);
           expect(response.status).toBe(400);
-          expect(response.body.message).toMatch('Invalid SubCategory id');
+          expect(response.body.message).toMatch('Invalid subCategory id');
         });
       });
 
       describe('with non-existing id', () => {
-        test('should return 404 Not Found', async () => {
+        it('should return 404 Not Found', async () => {
           const response = await supertest(app)
             .delete('/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567')
             .set('Authorization', `Bearer ${adminToken}`);
@@ -286,10 +275,9 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with regular user token', () => {
-        test('should return 403 Forbidden', async () => {
-          const newSubCategory = await createSubCategory(categoryId);
+        it('should return 403 Forbidden', async () => {
           const response = await supertest(app)
-            .delete(`/api/v1/subCategories/${newSubCategory._id}`)
+            .delete(`/api/v1/subCategories/$646f3b0c4d5e8a3d4c8b4567`)
             .set('Authorization', `Bearer ${userToken}`);
           expect(response.status).toBe(403);
           expect(response.body.message).toBe(
@@ -299,10 +287,9 @@ describe('Testing subCategory routes ', () => {
       });
 
       describe('with missing token', () => {
-        test('should return 401 Unauthorized', async () => {
-          const newSubCategory = await createSubCategory(categoryId);
+        it('should return 401 Unauthorized', async () => {
           const response = await supertest(app).delete(
-            `/api/v1/subCategories/${newSubCategory._id}`,
+            `/api/v1/subCategories/$646f3b0c4d5e8a3d4c8b4567`,
           );
           expect(response.status).toBe(401);
           expect(response.body.message).toBe(
