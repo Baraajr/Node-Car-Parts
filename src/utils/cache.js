@@ -11,13 +11,6 @@ const client = createClient({
   url: redisUrl,
 });
 
-client.on('error', (err) => console.error('Redis Client Error', err));
-client.on('connect', () => {
-  console.log('Redis client connected');
-});
-
-client.connect(); // Important for Redis v4+
-
 const { exec } = mongoose.Query.prototype;
 
 mongoose.Query.prototype.cache = function (options = {}) {
@@ -26,35 +19,45 @@ mongoose.Query.prototype.cache = function (options = {}) {
   return this; // Chainable
 };
 
-mongoose.Query.prototype.exec = async function () {
-  if (!this.useCache) {
-    return exec.apply(this, arguments);
-  }
-
-  const key = JSON.stringify({
-    ...this.getQuery(),
-    collection: this.mongooseCollection.name,
+if (process.env.NODE_ENV !== 'test') {
+  client.on('error', (err) => console.error('Redis Client Error', err));
+  client.on('connect', () => {
+    console.log('Redis client connected');
   });
 
-  const cacheValue = await client.hGet(this.hashKey, key);
+  client.connect(); // Important for Redis v4+
 
-  if (cacheValue) {
-    console.log('from redis');
-    const doc = JSON.parse(cacheValue);
-    return Array.isArray(doc)
-      ? doc.map((d) => new this.model(d))
-      : new this.model(doc);
-  }
+  mongoose.Query.prototype.exec = async function () {
+    if (!this.useCache) {
+      return exec.apply(this, arguments);
+    }
 
-  const result = await exec.apply(this, arguments);
-  await client.hSet(this.hashKey, key, JSON.stringify(result));
-  await client.expire(this.hashKey, 10); // Set expiration separately
-  console.log('from mongo');
+    const key = JSON.stringify({
+      ...this.getQuery(),
+      collection: this.mongooseCollection.name,
+    });
 
-  return result;
-};
+    const cacheValue = await client.hGet(this.hashKey, key);
+
+    if (cacheValue) {
+      // console.log('from redis');
+      const doc = JSON.parse(cacheValue);
+      return Array.isArray(doc)
+        ? doc.map((d) => new this.model(d))
+        : new this.model(doc);
+    }
+
+    const result = await exec.apply(this, arguments);
+    await client.hSet(this.hashKey, key, JSON.stringify(result));
+    await client.expire(this.hashKey, 10); // Set expiration separately
+    // console.log('from mongo');
+
+    return result;
+  };
+}
 
 module.exports = {
+  client,
   async clearHash(hashKey) {
     await client.del(JSON.stringify(hashKey));
   },

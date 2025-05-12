@@ -13,14 +13,7 @@ exports.createProductValidator = [
     .isLength({ min: 3 })
     .withMessage('must be at least 3 chars')
     .notEmpty()
-    .withMessage('Product name is required')
-    .custom(async (val, { req }) => {
-      req.body.slug = slugify(val);
-      const product = await Product.findOne({ name: val });
-      if (product) {
-        throw new AppError('Product name must be unique', 400);
-      }
-    }),
+    .withMessage('Product name is required'),
   check('description')
     .notEmpty()
     .withMessage('Product description is required')
