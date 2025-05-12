@@ -14,12 +14,12 @@ exports.getAll = (model, populateOptions, modelName = '') =>
     const cacheKey = JSON.stringify({
       ...req.query,
     });
-
+    modelName = modelName || model.modelName;
     const documentsCounts = await model.countDocuments();
     const features = new ApiFeatures(model.find(filter), req.query)
       .paginate(documentsCounts)
       .filter()
-      .search(modelName)
+      .search(model.modelName)
       .limitFields()
       .sort();
 
@@ -33,13 +33,13 @@ exports.getAll = (model, populateOptions, modelName = '') =>
       });
     const documents = await mongooseQuery.cache('public');
 
+    const data = {};
+    data[modelName] = documents;
     res.status(200).json({
       status: 'success',
       results: documents.length,
       paginationResult,
-      data: {
-        documents,
-      },
+      data,
     });
   });
 
@@ -55,12 +55,11 @@ exports.createOne = (model) =>
     if (req.body.title) req.body.slug = slugify(req.body.title);
 
     const newDoc = await model.create(req.body);
-
+    const data = {};
+    data[`${model.modelName.toLowerCase()}`] = newDoc;
     res.status(201).json({
       status: 'success',
-      data: {
-        doc: newDoc,
-      },
+      data,
     });
   });
 
@@ -81,11 +80,11 @@ exports.getOne = (model, populateOptions) =>
       );
     }
 
+    const data = {};
+    data[`${model.modelName.toLowerCase()}`] = doc;
     res.status(200).json({
       status: 'success',
-      data: {
-        doc,
-      },
+      data,
     });
   });
 
@@ -122,10 +121,10 @@ exports.updateOne = (model) =>
     // to be able to use the post save middleware
     const updatedDoc = await oldDoc.save();
 
+    const data = {};
+    data[`${model.modelName.toLowerCase()}`] = updatedDoc;
     res.status(200).json({
       status: 'success',
-      data: {
-        doc: updatedDoc,
-      },
+      data,
     });
   });

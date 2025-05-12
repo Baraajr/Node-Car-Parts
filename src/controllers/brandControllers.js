@@ -25,7 +25,7 @@ exports.resizeImage = catchAsync(async (req, res, next) => {
 
 //  route:  GET api/v1/brands
 //  access  public
-exports.getAllBrands = factory.getAll(Brand);
+exports.getAllBrands = factory.getAll(Brand, '', 'brands');
 
 //  route:  POST api/v1/brands
 //  access  admin

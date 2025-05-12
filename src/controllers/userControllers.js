@@ -35,7 +35,7 @@ exports.resizeImage = catchAsync(async (req, res, next) => {
 });
 
 // only admin will use these
-exports.getAllUsers = factory.getAll(User);
+exports.getAllUsers = factory.getAll(User, '', 'users');
 exports.createUser = factory.createOne(User);
 exports.getUser = factory.getOne(User);
 

@@ -64,7 +64,7 @@ exports.filterOrdersForLoggedUser = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllOrders = factory.getAll(Order);
+exports.getAllOrders = factory.getAll(Order, '', 'orders');
 
 exports.getOrder = factory.getOne(Order);
 

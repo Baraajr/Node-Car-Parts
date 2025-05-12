@@ -17,7 +17,7 @@ exports.setProductAndUserIdToBody = (req, res, next) => {
   next();
 };
 
-exports.getAllReviews = factory.getAll(Review);
+exports.getAllReviews = factory.getAll(Review, '', 'reviews');
 
 exports.createReview = factory.createOne(Review);
 exports.updateReview = factory.updateOne(Review);

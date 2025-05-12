@@ -59,7 +59,7 @@ exports.createFilterObject = (req, res, next) => {
 
 //  route:  GET api/v1/categories
 //  access  public
-exports.getAllCategories = factory.getAll(Category);
+exports.getAllCategories = factory.getAll(Category, '', 'categories');
 
 //  route:  POST api/v1/categories
 //  access  admin

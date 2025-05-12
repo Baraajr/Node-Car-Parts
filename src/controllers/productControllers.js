@@ -7,7 +7,6 @@ const Product = require('../models/productModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const { uploadMixOfImages } = require('../middlewares/uploadImageMiddleware');
-const AppError = require('../utils/appError');
 
 // Middleware to upload product images
 exports.uploadProductImages = uploadMixOfImages([
@@ -61,7 +60,7 @@ exports.setBodySlug = (req, res, next) => {
   next();
 };
 
-exports.getAllProducts = factory.getAll(Product, '', 'Products');
+exports.getAllProducts = factory.getAll(Product, '', 'products');
 exports.createProduct = factory.createOne(Product);
 exports.getProduct = factory.getOne(Product, 'reviews');
 exports.updateProduct = factory.updateOne(Product);
