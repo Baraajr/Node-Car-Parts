@@ -1,6 +1,3 @@
-/* eslint-disable node/no-unpublished-require */
-/* eslint-disable no-undef */
-/* eslint-disable import/no-extraneous-dependencies */
 const supertest = require('supertest');
 const { createReqularUser } = require('../helpers/helper');
 const app = require('../../src/app');

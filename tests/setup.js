@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable node/no-unpublished-require */
-/* eslint-disable import/no-extraneous-dependencies */
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 
