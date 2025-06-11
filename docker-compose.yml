@@ -1,7 +1,7 @@
 # base docker-compose file
 services:
   car-parts:
-    image: car-parts # specify the name of the image
+    image: baraajr11/car-parts-app # specify the name of the image
     env_file:
       - ./.env
     environment:
