@@ -80,7 +80,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 mountRoutes(app);
 
 app.get('/', (req, res) => {
-  res.send(`Welcome to the car parts API! cicd enabled`);
+  res.send(`Welcome to the car parts API!`);
 });
 
 // Handle unhandled routes
