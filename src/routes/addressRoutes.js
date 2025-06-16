@@ -16,6 +16,6 @@ router
   .get(getLoggedUserAddresses)
   .post(addAddressValidator, addAddress);
 
-router.delete('/:productId', removeAddress);
+router.delete('/:addressId', removeAddress);
 
 module.exports = router;

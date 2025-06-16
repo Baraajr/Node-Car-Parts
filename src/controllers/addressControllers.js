@@ -15,7 +15,7 @@ exports.addAddress = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     message: 'Address added successfully',
-    data: user.addresses,
+    data: { address: user.addresses },
   });
 });
 
@@ -30,10 +30,9 @@ exports.removeAddress = catchAsync(async (req, res, next) => {
     },
   ); //the $addToSet operator prevents duplicates
 
-  res.status(200).json({
+  res.status(204).json({
     status: 'success',
     message: 'address removed successfully ',
-    data: user.addresses,
   });
 });
 
@@ -43,6 +42,6 @@ exports.getLoggedUserAddresses = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     result: user.addresses.length,
-    data: user.addresses,
+    data: { addresses: user.addresses },
   });
 });
