@@ -4,13 +4,6 @@
 const mongoose = require('mongoose');
 const { createClient } = require('redis');
 
-const redisHost = process.env.REDIS_HOST;
-const redisPort = process.env.REDIS_PORT;
-const redisUrl = `redis://${redisHost}:${redisPort}`;
-const client = createClient({
-  url: redisUrl,
-});
-
 const { exec } = mongoose.Query.prototype;
 
 mongoose.Query.prototype.cache = function (options = {}) {
@@ -20,6 +13,12 @@ mongoose.Query.prototype.cache = function (options = {}) {
 };
 
 if (process.env.NODE_ENV !== 'test') {
+  const redisHost = process.env.REDIS_HOST;
+  const redisPort = process.env.REDIS_PORT;
+  const redisUrl = `redis://${redisHost}:${redisPort}`;
+  const client = createClient({
+    url: redisUrl,
+  });
   client.on('error', (err) => console.error('Redis Client Error', err));
   client.on('connect', () => {
     console.log('Redis client connected');
@@ -57,7 +56,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 module.exports = {
-  client,
   async clearHash(hashKey) {
     await client.del(JSON.stringify(hashKey));
   },
