@@ -29,7 +29,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./mongo-data:/data/db # Mount the mongo-data directory to the container
+      - mongo-data:/data/db # Mount the mongo-data directory to the container
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
