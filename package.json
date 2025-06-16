@@ -6,7 +6,7 @@
     "start": "node ./src/server",
     "dev": "nodemon --legacy-watch ./src/server",
     "prod": "set NODE_ENV=production&& nodemon --legacy-watch ./src/server",
-    "test": " set NODE_ENV=test&& jest --detectOpenHandles --watchAll"
+    "test": "jest"
   },
   "keywords": [],
   "author": "BaRaaJR",
