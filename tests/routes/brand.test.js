@@ -99,7 +99,7 @@ describe('Testing brand routes ', () => {
               .post('/api/v1/brands')
               .set('Authorization', `Bearer ${adminToken}`)
               .send({
-                name: 'ab',
+                name: 'a',
               });
             expect(response.status).toBe(400);
             expect(response.body.message).toContain('Too short Brand name');
