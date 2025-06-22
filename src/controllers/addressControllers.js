@@ -21,7 +21,7 @@ exports.addAddress = catchAsync(async (req, res, next) => {
 
 exports.removeAddress = catchAsync(async (req, res, next) => {
   // $pull => remove address from user's addresses
-  const user = await User.findByIdAndUpdate(
+  await User.findByIdAndUpdate(
     req.user._id,
     { $pull: { addresses: { _id: req.params.addressId } } }, // address here is an object not like product ObjectId in wishlist
     {

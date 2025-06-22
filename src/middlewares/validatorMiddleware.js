@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const { validationResult } = require('express-validator');
 const AppError = require('../utils/appError');
 

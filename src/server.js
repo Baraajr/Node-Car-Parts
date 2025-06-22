@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-// eslint-disable-next-line import/no-extraneous-dependencies
 const connectDb = require('./config/db');
 
 // Handle uncaught exceptions

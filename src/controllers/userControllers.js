@@ -1,12 +1,9 @@
 // const slugify = require('slugify');
 const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
-const sharp = require('sharp');
 const User = require('../models/userModel');
 const factory = require('./handlerFactory');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
-const { uploadSingleImage } = require('../middlewares/uploadImageMiddleware');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -20,47 +17,6 @@ const filterObj = (obj, ...allowedFields) => {
 exports.getAllUsers = factory.getAll(User, '', 'users');
 exports.createUser = factory.createOne(User);
 exports.getUser = factory.getOne(User);
-
-// exports.updateUser = catchAsync(async (req, res, next) => {
-//   // prevent this route from updating password
-//   if (req.body.password)
-//     return next(new AppError('this route is not for updating password', 400));
-
-//   if (req.body.name) req.body.slug = slugify(req.body.name);
-
-//   // prevent changing the user role
-//   delete req.body.role;
-
-//   const updatedDoc = await User.findByIdAndUpdate(req.params.id, req.body, {
-//     new: true,
-//     runValidators: true,
-//   });
-
-//   if (!updatedDoc) {
-//     return next(new AppError('No document found with this ID', 404));
-//   }
-
-//   res.status(200).json({
-//     status: 'success',
-//     updatedDoc,
-//   });
-// });
-// exports.deleteUser = factory.deleteOne(User);
-
-// exports.updateUserPassword = catchAsync(async (req, res, next) => {
-//   const user = await User.findById(req.params.id);
-
-//   if (!user) return next(new AppError('user not found', 400));
-
-//   // we used the save method to hash the password using the pre save middleware /
-//   user.password = req.body.password;
-//   await user.save();
-
-//   res.status(200).json({
-//     status: 'password updated successfully',
-//     user,
-//   });
-// });
 
 // only admin can use this
 exports.updateUserRole = catchAsync(async (req, res, next) => {

@@ -30,14 +30,6 @@ exports.createCashOrder = catchAsync(async (req, res, next) => {
     shippingAddress: req.body.shippingAddress,
   });
 
-  //4)after creating order decrease the product quantity and increase the sold field in the product
-  // cart.cartItems.forEach(async (item) => {
-  //   const product = await Product.findByIdAn(item.product);
-  //   product.quantity -= item.quantity;
-  //   product.sold += item.quantity;
-  //   await product.save();
-  // });
-
   if (order) {
     const bulkOptions = cart.cartItems.map((item) => ({
       updateOne: {

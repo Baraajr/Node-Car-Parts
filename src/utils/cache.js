@@ -1,6 +1,3 @@
-/* eslint-disable new-cap */
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable prefer-rest-params */
 const mongoose = require('mongoose');
 const { createClient } = require('redis');
 
@@ -19,7 +16,10 @@ if (process.env.NODE_ENV !== 'test') {
   const client = createClient({
     url: redisUrl,
   });
-  client.on('error', (err) => console.error('Redis Client Error', err));
+  client.on('error', (err) => {
+    console.error('Redis Client Error', err);
+    process.exit(1);
+  });
   client.on('connect', () => {
     console.log('Redis client connected');
   });

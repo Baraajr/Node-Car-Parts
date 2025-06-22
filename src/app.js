@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config();
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -12,6 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const globalErrorHandler = require('./middlewares/errorHandler');
 const AppError = require('./utils/appError');
+
 //routes
 const mountRoutes = require('./routes/index');
 const { webhookCheckout } = require('./controllers/orderControllers');

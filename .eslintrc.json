@@ -1,10 +1,12 @@
 {
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
   "extends": ["airbnb", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"],
   "rules": {
-    "env": {
-      "jest": true
-    },
     "prettier/prettier": "off",
     "spaced-comment": "off",
     "no-console": "off",

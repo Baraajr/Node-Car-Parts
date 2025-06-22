@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-
 const Review = require('../models/reviewModel');
 const factory = require('./handlerFactory');
 

@@ -69,30 +69,6 @@ exports.getLoggedUserCart = catchAsync(async (req, res, next) => {
   });
 });
 
-// this works but we have the ID of the whole item
-// exports.removeProductFromCart = catchAsync(async (req, res, next) => {
-//   const { productId } = req.params;
-//   const cart = await Cart.findOne({ user: req.user._id });
-
-//   const productIndex = cart.cartItems.findIndex(
-//     (item) =>
-//       item.product.toString() === productId && item.color === req.body.color,
-//   );
-
-//   if (productIndex < 0)
-//     return next(new AppError('Product not found in the cart', 400));
-//   cart.cartItems.splice(productIndex, 1);
-
-//   cart.totalCartPrice = calculateTotalPrice(cart);
-//   await cart.save();
-
-//   res.status(200).json({
-//     status: 'success',
-//     message: 'product removed successfully',
-//     data: null,
-//   });
-// });
-
 exports.removeProductFromCart = catchAsync(async (req, res, next) => {
   const cart = await Cart.findOneAndUpdate(
     { user: req.user._id },

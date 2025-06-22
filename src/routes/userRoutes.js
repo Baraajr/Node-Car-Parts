@@ -4,10 +4,6 @@ const authControllers = require('../controllers/authControllers');
 
 const {
   getUserValidator,
-  // createUserValidator,
-  // updateUserValidator,
-  // deleteUserValidator,
-  // changeUserPasswordValidator,
   updateLoggedUserValidator,
 } = require('../utils/validators/userValidator');
 
@@ -38,33 +34,13 @@ router.delete('/deleteMe', userControllers.deleteLoggedUserData);
 
 router.use(authControllers.restrictTo('admin', 'manager'));
 
-// // change the user password by the admin
-// router.patch(
-//   '/changePassword/:id',
-//   changeUserPasswordValidator,
-//   userControllers.updateUserPassword,
-// );
-
 // update the role of the user by the admin
 router.patch('/updateRole/:id', userControllers.updateUserRole);
 
 /////////////////////////////      MAIN CRUDS ROUTES      /////////////////////////////
 
 router.route('/').get(userControllers.getAllUsers);
-// .post(
-//   userControllers.uploadUserImage,
-//   userControllers.resizeImage,
-//   createUserValidator,
-//   userControllers.createUser,
-// );
 
 router.route('/:id').get(getUserValidator, userControllers.getUser);
-// .patch(
-//   userControllers.uploadUserImage,
-//   userControllers.resizeImage,
-//   updateUserValidator,
-//   userControllers.updateUser,
-// )
-// .delete(deleteUserValidator, userControllers.deleteUser);
 
 module.exports = router;
