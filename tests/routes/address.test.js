@@ -1,13 +1,11 @@
 const supertest = require('supertest');
-const { createReqularUser, createJWTToken } = require('../helpers/helper');
 const app = require('../../src/app');
 
 let user;
 let token;
 let addressId;
-const { describe, it, expect, beforeAll } = require('@jest/globals');
 
-beforeAll(async () => {
+beforeEach(async () => {
   user = await createReqularUser();
   token = createJWTToken(user._id);
 });
@@ -41,7 +39,7 @@ describe('Address Routes', () => {
             .set('Authorization', `Bearer ${token}`)
             .send(newAddress);
 
-          addressId = response.body.data.address[0]._id; // Store the address ID for later use
+          addressId = response.body.data.address[0]._id;
           expect(response.statusCode).toBe(200);
           expect(response.body.data).toHaveProperty('address');
           expect(response.body.data.address).toEqual(

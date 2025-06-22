@@ -1,28 +1,12 @@
 const supertest = require('supertest');
 const app = require('../../src/app');
-const {
-  createAdminUser,
-  createReqularUser,
-  createJWTToken,
-  createBrand,
-  deleteAllBrands,
-  // deleteAllCategories,
-} = require('../helpers/helper');
 
 let adminToken;
 let userToken;
 
-beforeAll(async () => {
-  // create admin and regular user
-  const adminUser = await createAdminUser(); // Await user creation
-  adminToken = createJWTToken(adminUser._id); // Generate token after user is created
-  const regularUser = await createReqularUser(); // Await user creation
-  userToken = createJWTToken(regularUser._id); // Generate token after user is created
-});
-
-afterEach(async () => {
-  // delete all brands after each test
-  await deleteAllBrands();
+beforeEach(async () => {
+  const adminUser = await createAdminUser();
+  adminToken = createJWTToken(adminUser._id);
 });
 
 describe('Testing brand routes ', () => {
@@ -50,6 +34,9 @@ describe('Testing brand routes ', () => {
 
       describe('with regular user token', () => {
         it('Should returns 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const response = await supertest(app)
             .post('/api/v1/brands')
             .set('Authorization', `Bearer ${userToken}`)
@@ -108,7 +95,7 @@ describe('Testing brand routes ', () => {
 
         describe('with duplicate name', () => {
           it('should return 400 Bad Request', async () => {
-            await createBrand(); // Create a brand first
+            await createBrand();
             const response = await supertest(app)
               .post('/api/v1/brands')
               .set('Authorization', `Bearer ${adminToken}`)
@@ -205,6 +192,9 @@ describe('Testing brand routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const newBrand = await createBrand();
           const response = await supertest(app)
             .patch(`/api/v1/brands/${newBrand._id}`)
@@ -270,6 +260,8 @@ describe('Testing brand routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
           const newBrand = await createBrand();
           const response = await supertest(app)
             .delete(`/api/v1/brands/${newBrand._id}`)

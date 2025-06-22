@@ -1,34 +1,16 @@
 const supertest = require('supertest');
 const app = require('../../src/app');
 
-const {
-  createAdminUser,
-  createReqularUser,
-  createJWTToken,
-  createSubCategory,
-  deleteAllSubCategories,
-  createCategory,
-  // deleteAllCategories,
-} = require('../helpers/helper');
-
 let categoryId;
 let adminToken;
 let userToken;
 
-beforeAll(async () => {
-  // create admin and regular user
-  const adminUser = await createAdminUser(); // Await user creation
-  adminToken = createJWTToken(adminUser._id); // Generate token after user is created
-  const regularUser = await createReqularUser(); // Await user creation
-  userToken = createJWTToken(regularUser._id); // Generate token after user is created
+beforeEach(async () => {
+  const adminUser = await createAdminUser();
+  adminToken = createJWTToken(adminUser._id);
 
-  // create category
-  const category = await createCategory(); // Await category creation
-  categoryId = category._id; // Store the category ID for later use
-});
-
-afterEach(async () => {
-  await deleteAllSubCategories();
+  const category = await createCategory();
+  categoryId = category._id;
 });
 
 describe('Testing subCategory routes ', () => {
@@ -58,6 +40,9 @@ describe('Testing subCategory routes ', () => {
 
       describe('with regular user token', () => {
         it('Should returns 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const response = await supertest(app)
             .post('/api/v1/subCategories')
             .set('Authorization', `Bearer ${userToken}`)
@@ -210,6 +195,9 @@ describe('Testing subCategory routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const response = await supertest(app)
             .patch(`/api/v1/subCategories/646f3b0c4d5e8a3d4c8b4567`)
             .set('Authorization', `Bearer ${userToken}`)
@@ -273,6 +261,9 @@ describe('Testing subCategory routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const response = await supertest(app)
             .delete(`/api/v1/subCategories/$646f3b0c4d5e8a3d4c8b4567`)
             .set('Authorization', `Bearer ${userToken}`);

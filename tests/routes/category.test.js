@@ -1,27 +1,12 @@
 const supertest = require('supertest');
 const app = require('../../src/app');
-const {
-  createAdminUser,
-  createReqularUser,
-  createJWTToken,
-  deleteAllCategories,
-  createCategory,
-  // deleteAllCategories,
-} = require('../helpers/helper');
 
 let adminToken;
 let userToken;
 
-beforeAll(async () => {
-  // create admin and regular user
-  const adminUser = await createAdminUser(); // Await user creation
-  adminToken = createJWTToken(adminUser._id); // Generate token after user is created
-  const regularUser = await createReqularUser(); // Await user creation
-  userToken = createJWTToken(regularUser._id); // Generate token after user is created
-});
-
-afterEach(async () => {
-  await deleteAllCategories();
+beforeEach(async () => {
+  const adminUser = await createAdminUser();
+  adminToken = createJWTToken(adminUser._id);
 });
 
 describe('Testing cateory routes ', () => {
@@ -51,6 +36,9 @@ describe('Testing cateory routes ', () => {
 
       describe('with regular user token', () => {
         it('Should returns 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const response = await supertest(app)
             .post('/api/v1/categories')
             .set('Authorization', `Bearer ${userToken}`)
@@ -211,6 +199,9 @@ describe('Testing cateory routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const newCategory = await createCategory();
           const response = await supertest(app)
             .patch(`/api/v1/categories/${newCategory._id}`)
@@ -276,10 +267,14 @@ describe('Testing cateory routes ', () => {
 
       describe('with regular user token', () => {
         it('should return 403 Forbidden', async () => {
+          const regularUser = await createReqularUser();
+          userToken = createJWTToken(regularUser._id);
+
           const newCategory = await createCategory();
           const response = await supertest(app)
             .delete(`/api/v1/categories/${newCategory._id}`)
             .set('Authorization', `Bearer ${userToken}`);
+
           expect(response.status).toBe(403);
           expect(response.body.message).toBe(
             'you do not have permission to perform this action',
@@ -290,6 +285,7 @@ describe('Testing cateory routes ', () => {
       describe('with missing token', () => {
         it('should return 401 Unauthorized', async () => {
           const newCategory = await createCategory();
+
           const response = await supertest(app).delete(
             `/api/v1/categories/${newCategory._id}`,
           );

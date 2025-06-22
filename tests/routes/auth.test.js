@@ -1,22 +1,10 @@
 const supertest = require('supertest');
-const { createReqularUser } = require('../helpers/helper');
 const app = require('../../src/app');
 
 // mock the sendEmail function
 jest.mock('../../src/utils/sendEmail', () =>
   jest.fn().mockImplementation(() => Promise.resolve(true)),
 );
-
-// let user;
-
-beforeAll(async () => {
-  user = await createReqularUser({
-    name: 'Jane Doe',
-    email: 'johndoe@gmail.com',
-    password: 'test1234',
-    passwordConfirm: 'test1234',
-  });
-});
 
 describe('Auth Routes', () => {
   describe('POST /api/v1/auth/signup', () => {
@@ -68,6 +56,13 @@ describe('Auth Routes', () => {
 
     describe('with existing email', () => {
       it('should return 400 and an error message', async () => {
+        await createReqularUser({
+          name: 'Jane Doe',
+          email: 'johndoe@gmail.com',
+          password: 'test1234',
+          passwordConfirm: 'test1234',
+        });
+
         const res = await supertest(app).post('/api/v1/auth/signup').send({
           name: 'John Doe',
           email: 'johndoe@gmail.com',
@@ -161,6 +156,13 @@ describe('Auth Routes', () => {
   describe('POST /api/v1/auth/login', () => {
     describe('with valid credentials', () => {
       it('should return 200 and a token', async () => {
+        await createReqularUser({
+          name: 'Jane Doe',
+          email: 'johndoe@gmail.com',
+          password: 'test1234',
+          passwordConfirm: 'test1234',
+        });
+
         const res = await supertest(app).post('/api/v1/auth/login').send({
           email: 'johndoe@gmail.com',
           password: 'test1234',
@@ -220,6 +222,13 @@ describe('Auth Routes', () => {
   describe('POST /api/v1/auth/forgotpassword', () => {
     describe('with valid email', () => {
       it('should return 200', async () => {
+        await createReqularUser({
+          name: 'Jane Doe',
+          email: 'johndoe@gmail.com',
+          password: 'test1234',
+          passwordConfirm: 'test1234',
+        });
+
         const res = await supertest(app)
           .post('/api/v1/auth/forgotpassword')
           .send({
