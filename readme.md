@@ -63,6 +63,7 @@ A full-stack web application for buying and selling car parts, developed as a gr
 
 ## 📁 Project Structure
 
+```
 node-car-parts/
 ├── .github/workflows/ # CI rules (test, docker build)
 ├── nginx/ # Load-balancing config
@@ -75,16 +76,13 @@ node-car-parts/
 ├── tests/ # Integration and unit test suites
 ├── Car-Parts.postman_collection.json # Postman API collection
 ├── Dockerfile # Docker build config
-├── docker-compose\*.yml # Dev/prod orchestration files
+├── docker-compose*.yml # Dev/prod orchestration files
 ├── .eslintrc.json # ESLint config
 ├── .prettierrc # Prettier formatting config
 ├── jest.config.js # Jest config
 ├── package.json # NPM dependencies and scripts
-└── .gitignore / .dockerignore
-
-yaml
-Copy
-Edit
+└── .gitignore / .dockerignore # Ignore rules
+```
 
 ---
 
@@ -108,12 +106,13 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 
 # Or
 npm run prod
+```
 
 ---
 
-📫 Author
-Ahmed Baraa Ali Khattab
-📧 ahmedbaraa009@gmail.com
-🔗 LinkedIn
-🐙 GitHub
-```
+## 📫 Author
+
+**Ahmed Baraa Ali Khattab**  
+📧 [ahmedbaraa009@gmail.com](mailto:ahmedbaraa009@gmail.com)  
+🔗 [LinkedIn](https://www.linkedin.com/in/ahmed-baraa-b94b7b284)  
+🐙 [GitHub](https://github.com/Baraajr)
