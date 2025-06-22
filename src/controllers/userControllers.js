@@ -16,24 +16,6 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.uploadUserImage = uploadSingleImage('profileImg');
-
-// to use sharp we use the memory storage coz it enables sharp to use buffer
-exports.resizeImage = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-  const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
-
-  await sharp(req.file.buffer)
-    .resize(600, 600)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`uploads/users/${filename}`);
-
-  req.body.profileImg = filename;
-
-  next();
-});
-
 // only admin will use these
 exports.getAllUsers = factory.getAll(User, '', 'users');
 exports.createUser = factory.createOne(User);

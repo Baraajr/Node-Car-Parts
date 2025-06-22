@@ -26,8 +26,6 @@ router
   .post(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    productControllers.uploadProductImages,
-    productControllers.resizeProductImages,
     productControllers.setBodySlug,
     createProductValidator,
     productControllers.createProduct,
@@ -39,8 +37,6 @@ router
   .patch(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    productControllers.uploadProductImages,
-    productControllers.resizeProductImages,
     updateProductValidator,
     productControllers.updateProduct,
   )

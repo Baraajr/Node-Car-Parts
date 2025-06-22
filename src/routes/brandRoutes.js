@@ -8,8 +8,6 @@ const {
 } = require('../utils/validators/brandValidator');
 
 const {
-  uploadBrandImage,
-  resizeImage,
   getAllBrands,
   createBrand,
   updateBrand,
@@ -25,8 +23,6 @@ router
   .post(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    uploadBrandImage,
-    resizeImage,
     createBrandValidator,
     createBrand,
   );
@@ -37,8 +33,6 @@ router
   .patch(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    uploadBrandImage,
-    resizeImage,
     updateBrandValidator,
     updateBrand,
   )

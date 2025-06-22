@@ -31,24 +31,6 @@ categorySchema.virtual('subCategories', {
   localField: '_id',
 });
 
-// send the image url in the response
-const setImageURL = (doc) => {
-  if (doc.image) {
-    const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`;
-    doc.image = imageUrl;
-  }
-};
-// findOne, findAll and update
-categorySchema.post('init', (doc) => {
-  setImageURL(doc);
-});
-
-// create
-// after saving to the database we send the image url back
-categorySchema.post('save', (doc) => {
-  setImageURL(doc);
-});
-
 const Category = mongoose.model('Category', categorySchema);
 
 module.exports = Category;

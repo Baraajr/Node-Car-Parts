@@ -8,8 +8,6 @@ const {
   updateCategoryValidator,
 } = require('../utils/validators/categoryValidator');
 const {
-  uploadCategoryImage,
-  resizeImage,
   getAllCategories,
   createCategory,
   updateCategory,
@@ -31,8 +29,6 @@ router
   .post(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    uploadCategoryImage,
-    resizeImage,
     createCategoryValidator,
     createCategory,
   );
@@ -43,8 +39,6 @@ router
   .patch(
     authControllers.protect,
     authControllers.restrictTo('admin', 'manager'),
-    uploadCategoryImage,
-    resizeImage,
     updateCategoryValidator,
     updateCategory,
   )

@@ -133,24 +133,6 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-// send the image url in the response
-const setImageURL = (doc) => {
-  if (doc.profileImg) {
-    const imageUrl = `${process.env.BASE_URL}/users/${doc.profileImg}`;
-    doc.profileImg = imageUrl;
-  }
-};
-// findOne, findAll and update
-userSchema.post('init', (doc) => {
-  setImageURL(doc);
-});
-
-// create
-// after saving to the database we send the image url back
-userSchema.post('save', (doc) => {
-  setImageURL(doc);
-});
-
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

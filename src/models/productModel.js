@@ -5,9 +5,9 @@ const productSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'A product must have a name'],
+      unique: [true, 'Product name must be unique'],
       minLength: [3, 'Too short Product name'],
       trim: true,
-      // unique: [true, 'Product name must be unique'],
       maxLength: [32, 'Too long product name'],
     },
     slug: {
@@ -85,31 +85,12 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
-// send the image url in the response
-const setImageURL = (doc) => {
-  if (doc.imageCover) {
-    const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
-    doc.imageCover = imageUrl;
-  }
-};
-// findOne, findAll and update
-productSchema.post('init', (doc) => {
-  setImageURL(doc);
-});
-
-// create
-productSchema.post('save', (doc) => {
-  setImageURL(doc);
-});
-
 // virtual populate reviews
 productSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'product',
   localField: '_id',
 });
-
-productSchema.index({ name: 1 }, { unique: true });
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;

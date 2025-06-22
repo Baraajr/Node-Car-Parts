@@ -171,6 +171,7 @@ exports.updateProductValidator = [
       return true;
     }),
   check('category')
+    .optional()
     .isMongoId()
     .withMessage('Invalid category ID format')
     .custom(async (val, { req }) => {
