@@ -49,8 +49,13 @@ app.use(express.urlencoded({ extended: true }));
 // For parsing cookies
 app.use(cookieParser());
 
-app.use(cors()); // This will enable CORS for all routes
-app.options('*', cors());
+// app.use(
+//   cors({
+//     origin: 'http://localhost:4200',
+//     credentials: true,
+//   }),
+// ); // This will enable CORS for all routes
+
 app.use(compression());
 
 // limit the requests
