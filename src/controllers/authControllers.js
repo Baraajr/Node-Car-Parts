@@ -23,6 +23,7 @@ const createAndSendToken = (user, status, req, res) => {
     ),
     httpOnly: true,
     secure: req.secure === true || req.headers['x-forwarded-proto'] === 'https',
+    sameSite: 'none',
   };
 
   //2) save the token to the cookies

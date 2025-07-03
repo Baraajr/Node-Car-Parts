@@ -3,6 +3,7 @@ const { createClient } = require('redis');
 
 const { exec } = mongoose.Query.prototype;
 
+let client;
 mongoose.Query.prototype.cache = function (options = {}) {
   this.useCache = true;
   this.hashKey = JSON.stringify(options.key || '');
@@ -13,7 +14,7 @@ if (process.env.NODE_ENV !== 'test') {
   const redisHost = process.env.REDIS_HOST;
   const redisPort = process.env.REDIS_PORT;
   const redisUrl = `redis://${redisHost}:${redisPort}`;
-  const client = createClient({
+  client = createClient({
     url: redisUrl,
   });
   client.on('error', (err) => {
@@ -32,14 +33,16 @@ if (process.env.NODE_ENV !== 'test') {
     }
 
     const key = JSON.stringify({
-      ...this.getQuery(),
-      collection: this.mongooseCollection.name,
+      query: this.getQuery(), // filters
+      collection: this.mongooseCollection.name, // model
+      options: this.getOptions(), // sort, skip, limit, etc.
+      fields: this._fields, // selected fields
     });
 
     const cacheValue = await client.hGet(this.hashKey, key);
 
     if (cacheValue) {
-      // console.log('from redis');
+      console.log('from redis');
       const doc = JSON.parse(cacheValue);
       return Array.isArray(doc)
         ? doc.map((d) => new this.model(d))
@@ -48,8 +51,8 @@ if (process.env.NODE_ENV !== 'test') {
 
     const result = await exec.apply(this, arguments);
     await client.hSet(this.hashKey, key, JSON.stringify(result));
-    await client.expire(this.hashKey, 10); // Set expiration separately
-    // console.log('from mongo');
+    await client.expire(this.hashKey, 50000); // Set expiration separately
+    console.log('from mongo');
 
     return result;
   };
@@ -57,6 +60,9 @@ if (process.env.NODE_ENV !== 'test') {
 
 module.exports = {
   async clearHash(hashKey) {
-    await client.del(JSON.stringify(hashKey));
+    if (client) {
+      await client.del(JSON.stringify(hashKey));
+      console.log('Cache cleared successfully');
+    }
   },
 };
