@@ -10,10 +10,6 @@ exports.getAll = (model, populateOptions, modelName = '') =>
     let filter = {};
     if (req.filterObj) filter = req.filterObj;
 
-    // cache key for redis
-    const cacheKey = JSON.stringify({
-      ...req.query,
-    });
     modelName = modelName || model.modelName;
     const documentsCounts = await model.countDocuments();
     const features = new ApiFeatures(model.find(filter), req.query)
@@ -31,15 +27,13 @@ exports.getAll = (model, populateOptions, modelName = '') =>
         path: populateOptions,
         select: 'name',
       });
-    const documents = await mongooseQuery.cache('public');
+    const documents = await mongooseQuery;
 
-    const data = {};
-    data[modelName] = documents;
     res.status(200).json({
       status: 'success',
       results: documents.length,
       paginationResult,
-      data,
+      data: documents,
     });
   });
 

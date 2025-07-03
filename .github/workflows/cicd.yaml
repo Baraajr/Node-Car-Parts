@@ -68,6 +68,10 @@ jobs:
           script: |
             # cd to the project directory
             cd node-car-parts
+
+            #pull code updates
+            git pull origin master
+
             # Pull the latest image
             docker pull ${{ secrets.DOCKER_USERNAME }}/car-parts-app:latest
 
