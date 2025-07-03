@@ -20,7 +20,7 @@ describe('Testing Products routes ', () => {
       it('should return an array of products', async () => {
         const response = await supertest(app).get('/api/v1/products');
         expect(response.status).toBe(200);
-        expect(Array.isArray(response.body.data.products)).toBeTruthy();
+        expect(Array.isArray(response.body.data)).toBeTruthy();
       });
     });
 
@@ -94,11 +94,8 @@ describe('Testing Products routes ', () => {
               });
 
             expect(response.status).toBe(201);
-            expect(response.body.data.product).toHaveProperty(
-              'name',
-              'Test Product 2',
-            );
-            expect(response.body.data.product).toHaveProperty('price', 200);
+            expect(response.body.data).toHaveProperty('name', 'Test Product 2');
+            expect(response.body.data).toHaveProperty('price', 200);
           });
         });
 
@@ -425,10 +422,7 @@ describe('Testing Products routes ', () => {
             `/api/v1/products/${product._id}`,
           );
           expect(response.status).toBe(200);
-          expect(response.body.data.product).toHaveProperty(
-            'name',
-            'Test Product',
-          );
+          expect(response.body.data).toHaveProperty('name', 'Test Product');
         });
       });
       describe('with invalid id', () => {
@@ -469,17 +463,14 @@ describe('Testing Products routes ', () => {
               quantity: 10,
             });
           expect(response.status).toBe(200);
-          expect(response.body.data.product).toHaveProperty(
-            'name',
-            'Updated Product',
-          );
-          expect(response.body.data.product).toHaveProperty('price', 300);
-          expect(response.body.data.product).toHaveProperty(
+          expect(response.body.data).toHaveProperty('name', 'Updated Product');
+          expect(response.body.data).toHaveProperty('price', 300);
+          expect(response.body.data).toHaveProperty(
             'description',
             'Updated product description',
           );
 
-          expect(response.body.data.product).toHaveProperty('quantity', 10);
+          expect(response.body.data).toHaveProperty('quantity', 10);
         });
       });
 
@@ -688,7 +679,7 @@ describe('Testing Products routes ', () => {
         );
         expect(response.status).toBe(200);
         expect(response.body.status).toBe('success');
-        expect(Array.isArray(response.body.data.reviews)).toBeTruthy();
+        expect(Array.isArray(response.body.data)).toBeTruthy();
       });
     });
     describe('with invalid id', () => {
@@ -732,9 +723,9 @@ describe('Testing Products routes ', () => {
 
           expect(response.status).toBe(201);
           expect(response.body.status).toBe('success');
-          expect(response.body.data.review.title).toBe('Great product!');
-          expect(response.body.data.review.ratings).toBe(4.5);
-          expect(response.body.data.review.product.toString()).toBe(
+          expect(response.body.data.title).toBe('Great product!');
+          expect(response.body.data.ratings).toBe(4.5);
+          expect(response.body.data.product.toString()).toBe(
             product._id.toString(),
           );
         });

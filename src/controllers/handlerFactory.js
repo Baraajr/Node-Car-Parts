@@ -49,11 +49,10 @@ exports.createOne = (model) =>
     if (req.body.title) req.body.slug = slugify(req.body.title);
 
     const newDoc = await model.create(req.body);
-    const data = {};
-    data[`${model.modelName.toLowerCase()}`] = newDoc;
+
     res.status(201).json({
       status: 'success',
-      data,
+      data: newDoc,
     });
   });
 
@@ -74,11 +73,9 @@ exports.getOne = (model, populateOptions) =>
       );
     }
 
-    const data = {};
-    data[`${model.modelName.toLowerCase()}`] = doc;
     res.status(200).json({
       status: 'success',
-      data,
+      data: doc,
     });
   });
 
@@ -115,10 +112,8 @@ exports.updateOne = (model) =>
     // to be able to use the post save middleware
     const updatedDoc = await oldDoc.save();
 
-    const data = {};
-    data[`${model.modelName.toLowerCase()}`] = updatedDoc;
     res.status(200).json({
       status: 'success',
-      data,
+      data: updatedDoc,
     });
   });

@@ -19,7 +19,7 @@ describe('Testing subCategory routes ', () => {
       it('should return an array of subCategories', async () => {
         const response = await supertest(app).get('/api/v1/subCategories');
         expect(response.status).toBe(200);
-        expect(Array.isArray(response.body.data.subcategories)).toBeTruthy();
+        expect(Array.isArray(response.body.data)).toBeTruthy();
       });
     });
 
@@ -69,7 +69,7 @@ describe('Testing subCategory routes ', () => {
               });
 
             expect(response.status).toBe(201);
-            expect(response.body.data.subcategory).toHaveProperty(
+            expect(response.body.data).toHaveProperty(
               'name',
               'test subcategory',
             );
@@ -119,10 +119,7 @@ describe('Testing subCategory routes ', () => {
             `/api/v1/subCategories/${newSubCategory._id}`,
           );
           expect(response.status).toBe(200);
-          expect(response.body.data.subcategory).toHaveProperty(
-            'name',
-            'test subCategory',
-          );
+          expect(response.body.data).toHaveProperty('name', 'test subCategory');
         });
       });
       describe('with invalid id', () => {
@@ -158,7 +155,7 @@ describe('Testing subCategory routes ', () => {
               name: 'Updated subCategory',
             });
           expect(response.status).toBe(200);
-          expect(response.body.data.subcategory).toHaveProperty(
+          expect(response.body.data).toHaveProperty(
             'name',
             'Updated subCategory',
           );

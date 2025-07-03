@@ -15,7 +15,7 @@ describe('Testing brand routes ', () => {
       it('should return an array of brands', async () => {
         const response = await supertest(app).get('/api/v1/brands');
         expect(response.status).toBe(200);
-        expect(Array.isArray(response.body.data.brands)).toBeTruthy();
+        expect(Array.isArray(response.body.data)).toBeTruthy();
       });
     });
 
@@ -62,10 +62,7 @@ describe('Testing brand routes ', () => {
               });
 
             expect(response.status).toBe(201);
-            expect(response.body.data.brand).toHaveProperty(
-              'name',
-              'test brand',
-            );
+            expect(response.body.data).toHaveProperty('name', 'test brand');
           });
         });
 
@@ -121,7 +118,7 @@ describe('Testing brand routes ', () => {
             `/api/v1/brands/${newBrand._id}`,
           );
           expect(response.status).toBe(200);
-          expect(response.body.data.brand).toHaveProperty('name', 'test brand');
+          expect(response.body.data).toHaveProperty('name', 'test brand');
         });
       });
       describe('with invalid id', () => {
@@ -155,10 +152,7 @@ describe('Testing brand routes ', () => {
               name: 'Updated brand',
             });
           expect(response.status).toBe(200);
-          expect(response.body.data.brand).toHaveProperty(
-            'name',
-            'Updated brand',
-          );
+          expect(response.body.data).toHaveProperty('name', 'Updated brand');
         });
       });
 
